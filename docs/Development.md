@@ -4,7 +4,7 @@
 
 Before getting started, please set your `OPENAI_API_KEY` and `TAVILY_API_KEY` environment variable. We use [tavily](https://www.tavily.com/) for LLM search engine support.
 
-We provide an example input file `test-dataset.jsonl` and a run config `test-config.json` in [examples](./examples) to help you quickly go through the launch process.
+We provide an example input file `data/examples/dataset.jsonl` and a run config `data/examples/config.json` in [examples](../data/examples) to help you quickly go through the launch process.
 
 ```shell
 pip install -e .
