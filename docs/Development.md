@@ -142,9 +142,10 @@ from launch.scripts.parser import run_parser
 # load an instance from organize.jsonl
 # load your diff_patch
 
-container = SetupRuntime.from_launch_image(instance["docker_image"], instance["instance_id"])
-container.send_command(f"""git apply - <<'NEW_PATCH'\n{diff_patch}\nNEW_PATCH""")
-# for windows powershell: container.send_command(f"""git apply - <<@"{diff_patch}"@""")
+container = SetupRuntime.from_launch_image(instance["docker_image"], 
+                                            instance["instance_id"],
+                                            platform="linux")
+container.apply_patch(diff_patch, verbose=True)
 container.send_command(";".join(instance["rebuild_cmd"]))
 container.send_command(";".join(instance["test_cmds"]))
 after_patch_testlog = container.send_command(";".join(instance["print_cmds"])).output
