@@ -204,7 +204,7 @@ class SetupRuntime:
         self.platform = container_platform
         self.mnt_host = os.path.join(os.getcwd(), "tmp")
         self.working_dir = r"C:\testbed" if self.platform == "windows" else r"/testbed"
-        self.mnt_container = os.path.join(self.working_dir, "mnt_tmp")
+        self.mnt_container = self.working_dir + r"\mnt_tmp" if self.platform == "windows" else r"/testbed/mnt_tmp"
         self.sock = self.container.attach_socket(
             params={"stdin": 1, "stdout": 1, "stderr": 1, "stream": 1}
         )
