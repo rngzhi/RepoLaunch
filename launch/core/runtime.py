@@ -644,12 +644,6 @@ function prompt {
             },
             working_dir=working_dir,
             extra_hosts=extra_hosts,
-            volumes={
-                os.path.join(os.getcwd(), "tmp"): {
-                    "bind": os.path.join(working_dir, "tmp"),
-                    "mode": "rw",
-                }
-            },
             **run_kwargs,
         )
 
@@ -711,8 +705,8 @@ if (-not (Get-Command git.exe -ErrorAction SilentlyContinue)) {
             res: CommandResult = session.send_command(
                 r'git clone {url} "C:\testbed"; cd "C:\testbed"; git reset --hard {base}'.format(
                     url=url, base=base_commit
+                )
             )
-        )
         else: 
             session.send_command("apt update && apt install -y git")
             res: CommandResult = session.send_command(
