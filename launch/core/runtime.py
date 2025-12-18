@@ -204,7 +204,7 @@ class SetupRuntime:
         self.platform = container_platform
         self.mnt_host = os.path.join(os.getcwd(), "tmp")
         self.working_dir = r"C:\testbed" if self.platform == "windows" else r"/testbed"
-        self.mnt_container = os.path.join(self.working_dir, "tmp")
+        self.mnt_container = os.path.join(self.working_dir, "mnt_tmp")
         self.sock = self.container.attach_socket(
             params={"stdin": 1, "stdout": 1, "stderr": 1, "stream": 1}
         )
@@ -434,10 +434,7 @@ function prompt {
         
         cmd = f"""git apply --reject  --whitespace=nowarn  {containerpath} """
         res = self.send_command(cmd)
-        try:
-            os.remove(hostpath)
-        except:
-            pass
+        self.send_command(f"rm {containerpath}")
         if int(res.metadata.exit_code) == 0:
             print(f"{cmd} ---- Patch applied Successfully!", flush=True)
             return True
@@ -571,7 +568,7 @@ function prompt {
             extra_hosts=extra_hosts,
             volumes={
                 os.path.join(os.getcwd(), "tmp"): {
-                    "bind": os.path.join(working_dir, "tmp"),
+                    "bind": os.path.join(working_dir, "mnt_tmp"),
                     "mode": "rw",
                 }
             },
