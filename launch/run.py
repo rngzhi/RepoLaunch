@@ -28,7 +28,7 @@ from launch.utilities.utils import prepare_workspace, safe_read_result
 from launch.scripts import collect
 
 lock = threading.Lock()
-
+GLOBAL_TIMEOUT = 36000 # 10 hr limit, if it cannot finish in 10 hrs the program must be stuck
 
 def setup_instance(instance, config, workspace_root):
     """
@@ -191,7 +191,7 @@ def run_setup(config: Config, dataset: list):
 
             for future in as_completed(futures): 
                 try:
-                    status, instance_id, error = future.result(timeout=10800)  # 3 hours timeout
+                    status, instance_id, error = future.result(timeout=GLOBAL_TIMEOUT) 
                     if status == "skip":
                         console.print(
                             f"[yellow]Skipped[/yellow] {instance_id}: {error or ''}"
@@ -217,7 +217,7 @@ def run_setup(config: Config, dataset: list):
                         progress.update(
                             task, advance=0, fail=progress.tasks[0].fields["fail"] + 1
                         )
-                    console.print(f"[red]Timeout[/red] {instance_id}: Task exceeded 3 hour timeout")
+                    console.print(f"[red]Timeout[/red] {instance_id}: Task exceeded {GLOBAL_TIMEOUT/3600} hour global timeout")
                     future.cancel()  # Cancel the timed-out task
                 progress.update(task, advance=1)
 
@@ -281,7 +281,7 @@ def run_organize(config: Config, dataset: list):
 
             for future in as_completed(futures): 
                 try:
-                    status, instance_id, error = future.result(timeout=10800)  # 3 hours timeout
+                    status, instance_id, error = future.result(timeout=GLOBAL_TIMEOUT)  
                     if status == "skip":
                         console.print(
                             f"[yellow]Skipped[/yellow] {instance_id}: {error or ''}"
@@ -307,7 +307,7 @@ def run_organize(config: Config, dataset: list):
                         progress.update(
                             task, advance=0, fail=progress.tasks[0].fields["fail"] + 1
                         )
-                    console.print(f"[red]Timeout[/red] {instance_id}: Task exceeded 3 hour timeout")
+                    console.print(f"[red]Timeout[/red] {instance_id}: Task exceeded {GLOBAL_TIMEOUT/3600} hour global timeout")
                     future.cancel()  # Cancel the timed-out task
                 progress.update(task, advance=1)
 
