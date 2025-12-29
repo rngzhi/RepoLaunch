@@ -47,7 +47,17 @@ class PythonHandler(LanguageHandler):
         return "python"
     
     def base_images(self, platform = "linux") -> List[str]:
-        return [f"python:3.{v}" for v in range(6, 12)]
+        if platform == "linux":
+          return [f"python:3.{v}" for v in range(6, 12)]
+        else:
+          return [f"python:3.{v}" for v in [
+              "14-windowsservercore-ltsc2025",
+              "13-windowsservercore-ltsc2025",
+              "12-windowsservercore-ltsc2025",
+              "11-windowsservercore-ltsc2022",
+              "10-windowsservercore-ltsc2022",
+              "9-windowsservercore-ltsc2022"
+          ]]
     
     def setup_environment(self, session: SetupRuntime, date: Optional[str] = None) -> Optional[Any]:
         """Setup Python environment with optional timemachine."""
@@ -105,7 +115,10 @@ class JavaScriptHandler(LanguageHandler):
         return "javascript"
     
     def base_images(self, platform = "linux") -> List[str]:
-        return [f"node:{v}" for v in ["18", "20", "22"]]
+        if platform == "linux":
+            return [f"node:{v}" for v in ["18", "20", "22"]]
+        else:
+            return ["karinali20011210/windows_server:ltsc2025_nvm",]
     
     def setup_environment(self, session: SetupRuntime, date: Optional[str] = None) -> Optional[Any]:
         """Setup Node.js environment."""
@@ -113,7 +126,7 @@ class JavaScriptHandler(LanguageHandler):
         return None
     
     def get_setup_instructions(self, base_image: str, platform: str = "linux") -> str:
-        return """
+        prompt= """
 ### JavaScript/Node.js-Specific Instructions:
 - Use npm, yarn, or pnpm to install dependencies (check package.json and lockfiles)
 - Run `npm install` or `yarn install` to install dependencies
@@ -121,6 +134,22 @@ class JavaScriptHandler(LanguageHandler):
 - Consider using `npm ci` for faster, reproducible builds if package-lock.json exists
 - Install global dependencies if needed (e.g., `npm install -g typescript`)
 """
+        if platform == "windows":
+            prompt = """
+### NVM Instructions:
+nvm --version; choco --version;
+# choco install is referred to install new pkgs...
+# node version switch
+nvm list available;
+nvm install 18.20.4; nvm use 18.20.4; node -v; npm -v; npx -v;
+# for TypeScript
+npm install --save-dev typescript@5.4.5; npx tsc --version;
+# for pnpm or yarn
+npm install corepack@latest; corepack enable; corepack prepare pnpm@latest --activate; corepack prepare yarn@stable --activate;
+
+
+"""+prompt
+        return prompt
     
     def cleanup_environment(self, session: SetupRuntime, server: Optional[Any] = None):
         """Cleanup JavaScript environment."""
@@ -152,16 +181,6 @@ class TypeScriptHandler(JavaScriptHandler):
     @property
     def language(self) -> str:
         return "typescript"
-    
-    def get_setup_instructions(self, base_image: str, platform: str = "linux") -> str:
-        return """
-### TypeScript-Specific Instructions:
-- Use npm, yarn, or pnpm to install dependencies (check package.json and lockfiles)
-- Run `npm install` or `yarn install` to install dependencies
-- Check package.json for test scripts and build commands
-- Consider using `npm ci` for faster, reproducible builds if package-lock.json exists
-- Install TypeScript globally if needed (e.g., `npm install -g typescript`)
-"""
 
 
 class RustHandler(LanguageHandler):
